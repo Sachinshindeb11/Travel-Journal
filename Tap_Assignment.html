@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Journal - Document Your Adventures</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        
+        .app-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .main-content {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #1a2a6c;
+            border-bottom: 2px solid #fdbb2d;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            border-color: #1a2a6c;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(26, 42, 108, 0.2);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .location-info {
+            background: #e9f7fe;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+        
+        .canvas-container {
+            position: relative;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 15px 0;
+            background: #f8f8f8;
+        }
+        
+        canvas {
+            display: block;
+            cursor: crosshair;
+            max-width: 100%;
+        }
+        
+        .tools {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tool-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background: #1a2a6c;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tool-btn:hover {
+            background: #0d1a4d;
+            transform: translateY(-2px);
+        }
+        
+        .tool-btn.active {
+            background: #fdbb2d;
+            color: #333;
+        }
+        
+        .color-picker {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.2s;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.2);
+        }
+        
+        .color-option.active {
+            border-color: #333;
+            transform: scale(1.1);
+        }
+        
+        .save-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: auto;
+        }
+        
+        .save-btn:hover {
+            background: #388E3C;
+            transform: translateY(-2px);
+        }
+        
+        .save-btn:disabled {
+            background: #a5d6a7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .entry-list {
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .entry-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+        
+        .entry-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .entry-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #1a2a6c;
+        }
+        
+        .entry-location {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .entry-date {
+            font-size: 0.8rem;
+            color: #888;
+            text-align: right;
+        }
+        
+        .status-message {
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .status-saving {
+            background: #FFF9C4;
+            color: #5D4037;
+        }
+        
+        .status-saved {
+            background: #C8E6C9;
+            color: #1B5E20;
+        }
+        
+        .status-error {
+            background: #FFCDD2;
+            color: #B71C1C;
+        }
+        
+        .api-badge {
+            display: inline-block;
+            background: #1a2a6c;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+        
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Travel Journal <i class="fas fa-map-marked-alt"></i></h1>
+            <p>Document your adventures with location-based photo annotations. Save efficiently in the background while you continue exploring!</p>
+        </header>
+        
+        <div class="app-container">
+            <div class="main-content">
+                <h2 class="section-title">Create New Entry</h2>
+                
+                <div class="form-group">
+                    <label for="title">Entry Title</label>
+                    <input type="text" id="title" placeholder="My amazing adventure in...">
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" placeholder="Share your experience..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Location <span class="api-badge">Geolocation API</span></label>
+                    <div class="location-info" id="location-info">
+                        <p>Click the button below to capture your current location</p>
+                    </div>
+                    <button class="tool-btn" id="get-location">
+                        <i class="fas fa-location-arrow"></i> Capture Current Location
+                    </button>
+                </div>
+                
+                <div class="form-group">
+                    <label>Upload & Annotate Photo <span class="api-badge">Canvas API</span></label>
+                    <input type="file" id="photo-upload" accept="image/*">
+                    <div class="canvas-container">
+                        <canvas id="photo-canvas" width="600" height="400"></canvas>
+                    </div>
+                    <div class="tools">
+                        <button class="tool-btn active" id="pen-tool">
+                            <i class="fas fa-pen"></i> Pen
+                        </button>
+                        <button class="tool-btn" id="text-tool">
+                            <i class="fas fa-font"></i> Text
+                        </button>
+                        <button class="tool-btn" id="clear-btn">
+                            <i class="fas fa-eraser"></i> Clear
+                        </button>
+                        <div class="color-picker">
+                            <div class="color-option active" style="background: #e74c3c;" data-color="#e74c3c"></div>
+                            <div class="color-option" style="background: #3498db;" data-color="#3498db"></div>
+                            <div class="color-option" style="background: #2ecc71;" data-color="#2ecc71"></div>
+                            <div class="color-option" style="background: #f1c40f;" data-color="#f1c40f"></div>
+                            <div class="color-option" style="background: #9b59b6;" data-color="#9b59b6"></div>
+                            <div class="color-option" style="background: #000000;" data-color="#000000"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="status-message" class="status-message status-saving" style="display: none;">
+                    Saving your entry in the background...
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <h2 class="section-title">Your Journal Entries</h2>
+                
+                <div class="entry-list" id="entry-list">
+                    <div class="entry-card">
+                        <div class="entry-title">First Day in Paris</div>
+                        <div class="entry-location"><i class="fas fa-map-marker-alt"></i> 48.8566° N, 2.3522° E</div>
+                        <p>Arrived at the Eiffel Tower just as the sun was setting...</p>
+                        <div class="entry-date">July 15, 2023</div>
+                    </div>
+                    
+                    <div class="entry-card">
+                        <div class="entry-title">Mountain Hike</div>
+                        <div class="entry-location"><i class="fas fa-map-marker-alt"></i> 46.5197° N, 10.5361° E</div>
+                        <p>Challenging hike with breathtaking views at the summit...</p>
+                        <div class="entry-date">June 22, 2023</div>
+                    </div>
+                </div>
+                
+                <button class="save-btn" id="save-entry">
+                    <i class="fas fa-save"></i> Save Entry <span class="api-badge">Background Tasks API</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const canvas = document.getElementById('photo-canvas');
+        const ctx = canvas.getContext('2d');
+        const photoUpload = document.getElementById('photo-upload');
+        const getLocationBtn = document.getElementById('get-location');
+        const locationInfo = document.getElementById('location-info');
+        const saveBtn = document.getElementById('save-entry');
+        const statusMessage = document.getElementById('status-message');
+        const penToolBtn = document.getElementById('pen-tool');
+        const textToolBtn = document.getElementById('text-tool');
+        const clearBtn = document.getElementById('clear-btn');
+        const colorOptions = document.querySelectorAll('.color-option');
+        const entryList = document.getElementById('entry-list');
+        
+        // App State
+        let currentLocation = null;
+        let currentImage = null;
+        let isDrawing = false;
+        let currentTool = 'pen';
+        let currentColor = '#e74c3c';
+        let lastX = 0;
+        let lastY = 0;
+        
+        // Initialize canvas
+        ctx.fillStyle = '#f8f8f8';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.font = '20px Arial';
+        ctx.fillStyle = '#ccc';
+        ctx.textAlign = 'center';
+        ctx.fillText('Upload a photo to annotate', canvas.width/2, canvas.height/2);
+        
+        // Event Listeners
+        photoUpload.addEventListener('change', handleImageUpload);
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        getLocationBtn.addEventListener('click', getLocation);
+        saveBtn.addEventListener('click', saveEntry);
+        penToolBtn.addEventListener('click', () => setTool('pen'));
+        textToolBtn.addEventListener('click', () => setTool('text'));
+        clearBtn.addEventListener('click', clearCanvas);
+        
+        // Color picker
+        colorOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                colorOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                currentColor = option.dataset.color;
+            });
+        });
+        
+        // Functions
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    // Scale image to fit canvas
+                    const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+                    const width = img.width * scale;
+                    const height = img.height * scale;
+                    const x = (canvas.width - width) / 2;
+                    const y = (canvas.height - height) / 2;
+                    
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, x, y, width, height);
+                    currentImage = img;
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        function startDrawing(e) {
+            isDrawing = true;
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+            
+            if (currentTool === 'text') {
+                const text = prompt('Enter your text:', 'Amazing place!');
+                if (text) {
+                    ctx.font = '20px Arial';
+                    ctx.fillStyle = currentColor;
+                    ctx.fillText(text, e.offsetX, e.offsetY);
+                }
+                isDrawing = false;
+            }
+        }
+        
+        function draw(e) {
+            if (!isDrawing || currentTool !== 'pen') return;
+            
+            ctx.strokeStyle = currentColor;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.lineWidth = 3;
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+            
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        }
+        
+        function stopDrawing() {
+            isDrawing = false;
+        }
+        
+        function setTool(tool) {
+            currentTool = tool;
+            
+            // Update active tool button
+            penToolBtn.classList.toggle('active', tool === 'pen');
+            textToolBtn.classList.toggle('active', tool === 'text');
+            
+            // Change cursor
+            canvas.style.cursor = tool === 'pen' ? 'crosshair' : 'text';
+        }
+        
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (currentImage) {
+                // Redraw the original image
+                const scale = Math.min(canvas.width / currentImage.width, canvas.height / currentImage.height);
+                const width = currentImage.width * scale;
+                const height = currentImage.height * scale;
+                const x = (canvas.width - width) / 2;
+                const y = (canvas.height - height) / 2;
+                
+                ctx.drawImage(currentImage, x, y, width, height);
+            } else {
+                // Draw placeholder
+                ctx.fillStyle = '#f8f8f8';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#ccc';
+                ctx.fillText('Upload a photo to annotate', canvas.width/2, canvas.height/2);
+            }
+        }
+        
+        function getLocation() {
+            if (!navigator.geolocation) {
+                locationInfo.innerHTML = '<p>Geolocation is not supported by your browser</p>';
+                return;
+            }
+            
+            locationInfo.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Getting location...</p>';
+            getLocationBtn.disabled = true;
+            
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    const { latitude, longitude } = position.coords;
+                    currentLocation = { latitude, longitude };
+                    
+                    locationInfo.innerHTML = `
+                        <p><i class="fas fa-check-circle"></i> Location captured!</p>
+                        <p>Latitude: ${latitude.toFixed(6)}°</p>
+                        <p>Longitude: ${longitude.toFixed(6)}°</p>
+                    `;
+                    
+                    getLocationBtn.disabled = false;
+                },
+                error => {
+                    locationInfo.innerHTML = `<p>Error: ${error.message}</p>`;
+                    getLocationBtn.disabled = false;
+                }
+            );
+        }
+        
+        function saveEntry() {
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            
+            if (!title) {
+                alert('Please enter a title for your entry');
+                return;
+            }
+            
+            if (!currentLocation) {
+                alert('Please capture your location first');
+                return;
+            }
+            
+            if (!currentImage) {
+                alert('Please upload a photo');
+                return;
+            }
+            
+            // Disable save button during processing
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            
+            // Show saving status
+            statusMessage.style.display = 'block';
+            statusMessage.className = 'status-message status-saving';
+            statusMessage.textContent = 'Saving your entry in the background...';
+            
+            // Get canvas data as image
+            const imageData = canvas.toDataURL('image/png');
+            
+            // Create entry object
+            const entry = {
+                id: Date.now(),
+                title,
+                description,
+                location: currentLocation,
+                image: imageData,
+                date: new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                })
+            };
+            
+            // Use Background Tasks API to save without blocking UI
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(() => {
+                    simulateSaveOperation(entry);
+                }, { timeout: 2000 });
+            } else {
+                // Fallback for browsers without requestIdleCallback
+                simulateSaveOperation(entry);
+            }
+        }
+        
+        function simulateSaveOperation(entry) {
+            // Simulate a save operation that takes some time
+            const startTime = Date.now();
+            
+            // Simulate work (in a real app, this would be saving to a database)
+            while (Date.now() - startTime < 1500) {
+                // Blocking operation simulation
+            }
+            
+            // Add to entry list
+            const entryCard = document.createElement('div');
+            entryCard.className = 'entry-card';
+            entryCard.innerHTML = `
+                <div class="entry-title">${entry.title}</div>
+                <div class="entry-location"><i class="fas fa-map-marker-alt"></i> 
+                    ${entry.location.latitude.toFixed(4)}° N, ${entry.location.longitude.toFixed(4)}° E
+                </div>
+                <p>${entry.description.substring(0, 100)}...</p>
+                <div class="entry-date">${entry.date}</div>
+            `;
+            
+            entryList.insertBefore(entryCard, entryList.firstChild);
+            
+            // Update status
+            statusMessage.className = 'status-message status-saved';
+            statusMessage.textContent = 'Entry saved successfully!';
+            
+            // Re-enable save button
+            setTimeout(() => {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Entry <span class="api-badge">Background Tasks API</span>';
+                
+                // Clear form after a delay
+                document.getElementById('title').value = '';
+                document.getElementById('description').value = '';
+                currentImage = null;
+                clearCanvas();
+            }, 1500);
+        }
+        
+        // Initialize with a demo location
+        window.addEventListener('load', () => {
+            currentLocation = {
+                latitude: 40.7128,
+                longitude: -74.0060
+            };
+            
+            locationInfo.innerHTML = `
+                <p><i class="fas fa-map-marker-alt"></i> Demo location loaded</p>
+                <p>Latitude: 40.7128°</p>
+                <p>Longitude: -74.0060°</p>
+            `;
+        });
+    </script>
+</body>
+</html>
